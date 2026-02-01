@@ -1,0 +1,46 @@
+"use client";
+
+import { PanInputDemo } from "../../../components/pan-input-demo";
+
+# PanInput
+
+An India-specific input for PAN (Permanent Account Number).
+
+- Enforces format: `AAAAA9999A`
+- Auto-uppercase
+- Paste-friendly (filters and reorders characters into the PAN pattern)
+- Built-in invalid styling when 10 chars are present and the value fails validation
+
+<PanInputDemo />
+
+## Usage
+
+```tsx
+import * as React from "react";
+import { PanInput, isValidPan } from "bharat-ui";
+
+export function Example() {
+  const [pan, setPan] = React.useState("");
+
+  return (
+    <div>
+      <PanInput value={pan} onValueChange={setPan} placeholder="ABCDE1234F" />
+      {pan.length === 10 && !isValidPan(pan) ? (
+        <div>Invalid PAN</div>
+      ) : null}
+    </div>
+  );
+}
+```
+
+## Props
+
+- `value?: string`
+- `defaultValue?: string`
+- `onValueChange?: (value: string) => void`
+- `invalid?: boolean` — optional manual invalid state
+
+## Utilities
+
+- `isValidPan(value: string)`
+- `coercePan(value: string)`
