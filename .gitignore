@@ -10,8 +10,12 @@ lerna-debug.log*
 node_modules
 dist
 
-# VitePress output
+# VitePress output (legacy)
 /docs/.vitepress/dist
+
+# Next.js (docs)
+/apps/docs/.next
+/apps/docs/out
 
 # Embedded demo build output (generated during docs build)
 /docs/public/demos

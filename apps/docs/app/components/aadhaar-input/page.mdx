@@ -1,0 +1,34 @@
+"use client";
+
+import { AadhaarInputDemo } from "../../../components/aadhaar-input-demo";
+
+# AadhaarInput
+
+A digit-only input optimized for Aadhaar numbers (12 digits, grouped 4-4-4) and OTPs (6 digits, grouped 3-3).
+
+<AadhaarInputDemo />
+
+## Usage
+
+```tsx
+import * as React from "react";
+import { AadhaarInput } from "bharat-ui";
+
+export function Example() {
+  const [value, setValue] = React.useState("");
+
+  return (
+    <AadhaarInput
+      value={value}
+      onValueChange={setValue}
+      onComplete={(v) => console.log("complete", v)}
+    />
+  );
+}
+```
+
+## Props
+
+- `mode?: "aadhaar" | "otp"` — defaults to `"aadhaar"`
+- `value?: string` — digits only
+- `onValueChange?: (value: string) => void`
