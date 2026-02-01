@@ -9,6 +9,12 @@ lerna-debug.log*
 
 node_modules
 dist
+
+# VitePress output
+/docs/.vitepress/dist
+
+# Embedded demo build output (generated during docs build)
+/docs/public/demos
 dist-ssr
 *.local
 

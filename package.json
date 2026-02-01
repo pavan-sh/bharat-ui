@@ -3,11 +3,19 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "bin": {
+    "bharat-ui": "./cli/index.js"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "npm run demo:aadhaar:build && vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "demo:aadhaar:dev": "vite --config demos/aadhaar-input/vite.config.ts",
+    "demo:aadhaar:build": "vite build --config demos/aadhaar-input/vite.config.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -31,6 +39,7 @@
     "tailwindcss": "^3.4.19",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "vitepress": "^1.6.3"
   }
 }
