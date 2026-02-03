@@ -1,33 +1,52 @@
 "use client";
 
 import * as React from "react";
-import { OTPInput, OTPInputContext } from "input-otp";
+import {
+  OTPInput,
+  OTPInputContext,
+  type RenderProps,
+  type OTPInputProps,
+} from "input-otp";
 
 import { cn } from "../../lib/cn";
 
-const InputOTP = React.forwardRef<
-  React.ElementRef<typeof OTPInput>,
-  React.ComponentPropsWithoutRef<typeof OTPInput>
->(({ className, containerClassName, ...props }, ref) => (
-  <OTPInput
-    ref={ref}
-    containerClassName={cn(
-      "flex items-center gap-2 has-[:disabled]:opacity-50",
-      containerClassName
-    )}
-    className={cn("disabled:cursor-not-allowed", className)}
-    {...props}
-  />
-));
+type InputOTPProps = Omit<OTPInputProps, "render" | "children"> & {
+  /** Prefer using children + <InputOTPSlot /> components. */
+  children?: React.ReactNode;
+  /** Advanced: custom render function. If provided, `children` are ignored. */
+  render?: (props: RenderProps) => React.ReactNode;
+};
+
+const InputOTP = React.forwardRef<React.ElementRef<typeof OTPInput>, InputOTPProps>(
+  ({ className, containerClassName, children, render, ...props }, ref) => (
+    <OTPInput
+      ref={ref}
+      containerClassName={cn(
+        "flex items-center gap-2 has-[:disabled]:opacity-50",
+        containerClassName
+      )}
+      className={cn("disabled:cursor-not-allowed", className)}
+      // IMPORTANT: use `render` to ensure input-otp renders its hidden input BEFORE the slots.
+      // Otherwise, pointer-events/focus behavior can break when using `children`.
+      render={
+        render ??
+        ((renderProps) => (
+          <OTPInputContext.Provider value={renderProps}>
+            {children}
+          </OTPInputContext.Provider>
+        ))
+      }
+      {...props}
+    />
+  )
+);
 InputOTP.displayName = "InputOTP";
 
 function InputOTPGroup({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  return (
-    <div className={cn("flex items-center", className)} {...props} />
-  );
+  return <div className={cn("flex items-center", className)} {...props} />;
 }
 
 function InputOTPSlot({
@@ -37,7 +56,7 @@ function InputOTPSlot({
 }: React.ComponentPropsWithoutRef<"div"> & { index: number }) {
   const inputOTPContext = React.useContext(OTPInputContext);
 
-  const slot = inputOTPContext.slots[index];
+  const slot = inputOTPContext.slots?.[index];
   if (!slot) {
     throw new Error(
       `InputOTPSlot: invalid index ${index}. Ensure maxLength is greater than this index.`
@@ -70,10 +89,7 @@ function InputOTPSeparator({
 }: React.ComponentPropsWithoutRef<"div">) {
   return (
     <div
-      className={cn(
-        "mx-1 select-none text-foreground/40",
-        className
-      )}
+      className={cn("mx-1 select-none text-foreground/40", className)}
       aria-hidden="true"
       {...props}
     >
@@ -83,3 +99,4 @@ function InputOTPSeparator({
 }
 
 export { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator };
+
