@@ -1,0 +1,49 @@
+import { VoterIdInputDemo } from "../../../components/voter-id-input-demo";
+
+# VoterIdInput
+
+An India-specific input for Voter ID (EPIC).
+
+- Enforces format: `AAA9999999` (3 letters + 7 digits)
+- Auto-uppercase
+- Paste-friendly (filters and reorders characters into the EPIC pattern)
+- Built-in invalid styling when 10 chars are present and the value fails validation
+
+<VoterIdInputDemo />
+
+## Usage
+
+```tsx
+import * as React from "react";
+import { VoterIdInput, isValidVoterId } from "bharat-ui";
+
+export function Example() {
+  const [voterId, setVoterId] = React.useState("");
+
+  return (
+    <div>
+      <VoterIdInput
+        value={voterId}
+        onValueChange={setVoterId}
+        placeholder="ABC1234567"
+      />
+      {voterId.length === 10 && !isValidVoterId(voterId) ? (
+        <div>Invalid Voter ID</div>
+      ) : null}
+    </div>
+  );
+}
+```
+
+## Props
+
+- `value?: string`
+- `defaultValue?: string`
+- `onValueChange?: (value: string) => void`
+- `mask?: boolean` — optional UI masking
+- `invalid?: boolean` — optional manual invalid state
+
+## Utilities
+
+- `isValidVoterId(value: string)`
+- `coerceVoterId(value: string)`

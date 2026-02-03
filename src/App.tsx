@@ -23,7 +23,6 @@ function App() {
             mode="aadhaar"
             value={aadhaar}
             onValueChange={setAadhaar}
-            aria-label="Aadhaar number"
           />
           <div className="text-xs text-foreground/60">Value: {aadhaar || "—"}</div>
         </div>
@@ -34,8 +33,6 @@ function App() {
             mode="otp"
             value={otp}
             onValueChange={setOtp}
-            autoComplete="one-time-code"
-            aria-label="Aadhaar OTP"
           />
           <div className="text-xs text-foreground/60">Value: {otp || "—"}</div>
         </div>
