@@ -1,33 +1,71 @@
 "use client";
 
 import * as React from "react";
-import { OTPInput, OTPInputContext } from "input-otp";
+import {
+  OTPInput,
+  OTPInputContext,
+  type RenderProps,
+  type OTPInputProps,
+} from "input-otp";
 
 import { cn } from "../../lib/cn";
 
-const InputOTP = React.forwardRef<
-  React.ElementRef<typeof OTPInput>,
-  React.ComponentPropsWithoutRef<typeof OTPInput>
->(({ className, containerClassName, ...props }, ref) => (
-  <OTPInput
-    ref={ref}
-    containerClassName={cn(
-      "flex items-center gap-2 has-[:disabled]:opacity-50",
-      containerClassName
-    )}
-    className={cn("disabled:cursor-not-allowed", className)}
-    {...props}
-  />
-));
+type InputOTPProps = Omit<OTPInputProps, "render" | "children"> & {
+  /** Prefer using children + <InputOTPSlot /> components. */
+  children?: React.ReactNode;
+  /** Advanced: custom render function. If provided, `children` are ignored. */
+  render?: (props: RenderProps) => React.ReactNode;
+};
+
+const InputOTP = React.forwardRef<React.ElementRef<typeof OTPInput>, InputOTPProps>(
+  ({ className, containerClassName, children, render, ...props }, forwardedRef) => {
+    const inputRef = React.useRef<React.ElementRef<typeof OTPInput>>(null);
+
+    // Forward the inner input ref outward.
+    React.useImperativeHandle(forwardedRef, () => inputRef.current as any, []);
+
+    const focusInput = React.useCallback(() => {
+      inputRef.current?.focus();
+    }, []);
+
+    return (
+      <OTPInput
+        ref={inputRef}
+        containerClassName={cn(
+          "flex items-center gap-2 has-[:disabled]:opacity-50",
+          containerClassName
+        )}
+        className={cn("disabled:cursor-not-allowed", className)}
+        // IMPORTANT: use `render` to ensure input-otp renders its hidden input BEFORE the slots.
+        // Also attach a pointer handler so clicking anywhere on the slots focuses the hidden input.
+        render={
+          render ??
+          ((renderProps) => (
+            <div
+              onPointerDown={(e) => {
+                // Prevent text selection; focus for immediate typing.
+                e.preventDefault();
+                focusInput();
+              }}
+            >
+              <OTPInputContext.Provider value={renderProps}>
+                {children}
+              </OTPInputContext.Provider>
+            </div>
+          ))
+        }
+        {...props}
+      />
+    );
+  }
+);
 InputOTP.displayName = "InputOTP";
 
 function InputOTPGroup({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  return (
-    <div className={cn("flex items-center", className)} {...props} />
-  );
+  return <div className={cn("flex items-center", className)} {...props} />;
 }
 
 function InputOTPSlot({
@@ -37,7 +75,7 @@ function InputOTPSlot({
 }: React.ComponentPropsWithoutRef<"div"> & { index: number }) {
   const inputOTPContext = React.useContext(OTPInputContext);
 
-  const slot = inputOTPContext.slots[index];
+  const slot = inputOTPContext.slots?.[index];
   if (!slot) {
     throw new Error(
       `InputOTPSlot: invalid index ${index}. Ensure maxLength is greater than this index.`
@@ -47,7 +85,9 @@ function InputOTPSlot({
   return (
     <div
       className={cn(
-        "relative flex h-10 w-10 items-center justify-center border border-border bg-background text-foreground text-sm transition-colors",
+        // Let the hidden input (absolutely positioned by input-otp) receive pointer events.
+        // This makes the slots feel clickable/focusable without needing per-slot handlers.
+        "pointer-events-none relative flex h-10 w-10 items-center justify-center border border-border bg-background text-foreground text-sm transition-colors",
         "first:rounded-l-md last:rounded-r-md",
         slot.isActive && "z-10 ring-2 ring-primary/30",
         className
@@ -70,10 +110,7 @@ function InputOTPSeparator({
 }: React.ComponentPropsWithoutRef<"div">) {
   return (
     <div
-      className={cn(
-        "mx-1 select-none text-foreground/40",
-        className
-      )}
+      className={cn("mx-1 select-none text-foreground/40", className)}
       aria-hidden="true"
       {...props}
     >
@@ -83,3 +120,4 @@ function InputOTPSeparator({
 }
 
 export { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator };
+
