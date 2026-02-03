@@ -66,7 +66,9 @@ function InputOTPSlot({
   return (
     <div
       className={cn(
-        "relative flex h-10 w-10 items-center justify-center border border-border bg-background text-foreground text-sm transition-colors",
+        // Let the hidden input (absolutely positioned by input-otp) receive pointer events.
+        // This makes the slots feel clickable/focusable without needing per-slot handlers.
+        "pointer-events-none relative flex h-10 w-10 items-center justify-center border border-border bg-background text-foreground text-sm transition-colors",
         "first:rounded-l-md last:rounded-r-md",
         slot.isActive && "z-10 ring-2 ring-primary/30",
         className
