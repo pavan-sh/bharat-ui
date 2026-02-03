@@ -18,27 +18,46 @@ type InputOTPProps = Omit<OTPInputProps, "render" | "children"> & {
 };
 
 const InputOTP = React.forwardRef<React.ElementRef<typeof OTPInput>, InputOTPProps>(
-  ({ className, containerClassName, children, render, ...props }, ref) => (
-    <OTPInput
-      ref={ref}
-      containerClassName={cn(
-        "flex items-center gap-2 has-[:disabled]:opacity-50",
-        containerClassName
-      )}
-      className={cn("disabled:cursor-not-allowed", className)}
-      // IMPORTANT: use `render` to ensure input-otp renders its hidden input BEFORE the slots.
-      // Otherwise, pointer-events/focus behavior can break when using `children`.
-      render={
-        render ??
-        ((renderProps) => (
-          <OTPInputContext.Provider value={renderProps}>
-            {children}
-          </OTPInputContext.Provider>
-        ))
-      }
-      {...props}
-    />
-  )
+  ({ className, containerClassName, children, render, ...props }, forwardedRef) => {
+    const inputRef = React.useRef<React.ElementRef<typeof OTPInput>>(null);
+
+    // Forward the inner input ref outward.
+    React.useImperativeHandle(forwardedRef, () => inputRef.current as any, []);
+
+    const focusInput = React.useCallback(() => {
+      inputRef.current?.focus();
+    }, []);
+
+    return (
+      <OTPInput
+        ref={inputRef}
+        containerClassName={cn(
+          "flex items-center gap-2 has-[:disabled]:opacity-50",
+          containerClassName
+        )}
+        className={cn("disabled:cursor-not-allowed", className)}
+        // IMPORTANT: use `render` to ensure input-otp renders its hidden input BEFORE the slots.
+        // Also attach a pointer handler so clicking anywhere on the slots focuses the hidden input.
+        render={
+          render ??
+          ((renderProps) => (
+            <div
+              onPointerDown={(e) => {
+                // Prevent text selection; focus for immediate typing.
+                e.preventDefault();
+                focusInput();
+              }}
+            >
+              <OTPInputContext.Provider value={renderProps}>
+                {children}
+              </OTPInputContext.Provider>
+            </div>
+          ))
+        }
+        {...props}
+      />
+    );
+  }
 );
 InputOTP.displayName = "InputOTP";
 
