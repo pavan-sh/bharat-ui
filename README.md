@@ -1,73 +1,52 @@
-# React + TypeScript + Vite
+# bharat-ui
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A small set of India-first UI components.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React + TypeScript
+- Vite
+- Tailwind CSS
 
-## React Compiler
+## Components
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- [`AadhaarInput`](./docs/components/aadhaar-input.md) — Aadhaar number (12 digits) and OTP (6 digits) input (inspired by shadcn/ui `InputOTP`).
 
-## Expanding the ESLint configuration
+## CLI (experimental, v1)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+This repo includes a minimal **shadcn-like** CLI to copy components into another project.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+```bash
+# from your target project directory
+npx /path/to/bharat-ui add input-otp
+npx /path/to/bharat-ui add aadhaar-input
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# options
+npx /path/to/bharat-ui add input-otp --components-path src/components --lib-path src/lib --yes
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Commands:
+- `bharat-ui list` — list available components
+- `bharat-ui add <component...>` — copy files + install dependencies
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Dev
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
+```
+
+## Docs (VitePress)
+
+Local docs:
+
+```bash
+npm run docs:dev
+```
+
+Build (also builds embedded demos):
+
+```bash
+npm run docs:build
+npm run docs:preview
 ```
