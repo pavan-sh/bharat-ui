@@ -6,7 +6,16 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores([
+    'dist',
+    'node_modules',
+    // Next.js docs app build artifacts
+    'apps/docs/.next',
+    'apps/docs/out',
+    // Docs app + demo apps are not part of the core library lint gate
+    'apps/**',
+    'demos/**',
+  ]),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

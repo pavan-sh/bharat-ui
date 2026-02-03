@@ -3,53 +3,11 @@
 import * as React from "react";
 
 import { cn } from "../../lib/cn";
-
-const PAN_MAX_LENGTH = 10;
-
-/**
- * Normalize to uppercase alphanumeric only.
- */
-function normalize(value: string) {
-  return value.toUpperCase().replace(/[^A-Z0-9]/g, "");
-}
-
-/**
- * Enforces PAN structure while being paste-friendly.
- * Pattern: AAAAA9999A
- */
-export function coercePan(value: string) {
-  const raw = normalize(value);
-
-  let out = "";
-
-  for (const ch of raw) {
-    const i = out.length;
-    if (i >= PAN_MAX_LENGTH) break;
-
-    const needsLetter = i < 5 || i === 9;
-    const needsDigit = i >= 5 && i <= 8;
-
-    if (needsLetter) {
-      if (/[A-Z]/.test(ch)) out += ch;
-      continue;
-    }
-
-    if (needsDigit) {
-      if (/[0-9]/.test(ch)) out += ch;
-      continue;
-    }
-  }
-
-  return out;
-}
-
-export function isValidPan(value: string) {
-  return /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(value);
-}
+import { coercePan, isValidPan, PAN_MAX_LENGTH } from "../../lib/pan";
 
 export type PanInputProps = Omit<
   React.ComponentPropsWithoutRef<"input">,
-  "value" | "defaultValue" | "onChange" | "inputMode" | "pattern" | "maxLength"
+  "value" | "defaultValue" | "onChange" | "inputMode" | "pattern" | "maxLength" | "type"
 > & {
   /** PAN value (will be auto-uppercased and coerced to AAAAA9999A). */
   value?: string;
@@ -57,6 +15,8 @@ export type PanInputProps = Omit<
   defaultValue?: string;
   /** Called whenever the value changes (coerced PAN string). */
   onValueChange?: (value: string) => void;
+  /** Toggle masking (UI only). Underlying value is still the real PAN string. */
+  mask?: boolean;
   /**
    * When true, styles the input as invalid.
    * If omitted, the input becomes invalid automatically when it has 10 chars and fails validation.
@@ -72,6 +32,7 @@ export const PanInput = React.forwardRef<HTMLInputElement, PanInputProps>(
       defaultValue,
       onValueChange,
       invalid,
+      mask,
       ...props
     },
     ref
@@ -98,6 +59,8 @@ export const PanInput = React.forwardRef<HTMLInputElement, PanInputProps>(
         }}
         autoCapitalize="characters"
         autoComplete="off"
+        // Keep it "text" for normal mode; use password masking when requested.
+        type={mask ? "password" : "text"}
         inputMode="text"
         maxLength={PAN_MAX_LENGTH}
         spellCheck={false}
