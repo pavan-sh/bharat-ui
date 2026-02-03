@@ -19,7 +19,7 @@ function NavLink({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href}
-      className="rounded-md px-2 py-1 text-sm text-zinc-800 hover:bg-zinc-100"
+      className="rounded-md px-2 py-1 text-sm text-zinc-800 hover:bg-saffron/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron/40 focus-visible:ring-offset-2"
     >
       {label}
     </Link>
@@ -29,6 +29,8 @@ function NavLink({ href, label }: { href: string; label: string }) {
 export function Sidebar() {
   return (
     <aside className="sticky top-0 h-dvh w-64 border-r border-zinc-200 bg-white p-4">
+      <div className="-mx-4 -mt-4 mb-4 h-px bg-gradient-to-r from-saffron/70 via-ashoka/50 to-indiaGreen/70" />
+
       <div className="mb-6">
         <Link href="/" className="text-sm font-semibold">
           bharat-ui
